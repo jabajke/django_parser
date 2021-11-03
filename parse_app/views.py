@@ -1,5 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import authenticate, login, logout, get_user_model
+
+from bs4 import BeautifulSoup
+import requests
 
 from rest_framework.views import APIView
 
@@ -23,3 +26,19 @@ class LoginView(APIView):
 def do_logout(request):
     logout(request)
     return redirect('login')
+
+
+class GetLinkView(APIView):
+    headers = {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/95.0.4638.69 Safari/537.36', 'accept': '*/*'}
+
+    def post(self, request):
+        link = request.data['link']
+        html = GetLinkView.get_html(self, link)
+        print(html)
+        return HttpResponse('voshlo')
+
+    def get_html(self, link, params=None):
+        r = requests.get(link, params=params)
+        return r
