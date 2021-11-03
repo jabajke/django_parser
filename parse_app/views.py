@@ -1,12 +1,12 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout, get_user_model
 
 from bs4 import BeautifulSoup
 import requests
 
 from rest_framework.views import APIView
+from rest_framework.response import Response
 
-from .models import ParseData
 
 
 def index(request):
@@ -37,17 +37,20 @@ class GetLinkView(APIView):
 
     def post(self, request):
         link = request.data['link']
-        html = GetLinkView.get_html(self, link)
-        return HttpResponse(self.get_content(html.content))
+        html = self.get_html(link)
+        return Response({'data': self.get_content(html.content)})
 
     def get_content(self, html):
         soup = BeautifulSoup(html, 'html.parser')
-        items = soup.find_all('span', class_='result__name')
+        items = soup.find_all('li', class_='result__item')
         print(items)
         goods = []
         for item in items:
-            goods.append({'title': item.find('span', class_='result__name').get_text()})
-            print(goods)
+            try:
+                goods.append({'title': item.get_text()})
+            except Exception as e:
+                print(e)
+        print(goods)
         return goods
 
     def get_html(self, link, params=None):
