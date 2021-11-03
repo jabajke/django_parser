@@ -6,6 +6,8 @@ import requests
 
 from rest_framework.views import APIView
 
+from .models import ParseData
+
 
 def index(request):
     pass
@@ -36,8 +38,17 @@ class GetLinkView(APIView):
     def post(self, request):
         link = request.data['link']
         html = GetLinkView.get_html(self, link)
-        print(html)
-        return HttpResponse('voshlo')
+        return HttpResponse(self.get_content(html.content))
+
+    def get_content(self, html):
+        soup = BeautifulSoup(html, 'html.parser')
+        items = soup.find_all('span', class_='result__name')
+        print(items)
+        goods = []
+        for item in items:
+            goods.append({'title': item.find('span', class_='result__name').get_text()})
+            print(goods)
+        return goods
 
     def get_html(self, link, params=None):
         r = requests.get(link, params=params)
