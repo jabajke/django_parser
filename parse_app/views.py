@@ -7,10 +7,7 @@ import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-
-
-def index(request):
-    pass
+from .models import ParseData
 
 
 class LoginView(APIView):
@@ -22,7 +19,7 @@ class LoginView(APIView):
         if not request.user.is_authenticated:
             create = get_user_model().objects.create_user(**request.data)
             login(request, create)
-        return redirect('index')
+        return redirect('get_link')
 
 
 def do_logout(request):
@@ -43,16 +40,24 @@ class GetLinkView(APIView):
     def get_content(self, html):
         soup = BeautifulSoup(html, 'html.parser')
         items = soup.find_all('li', class_='result__item')
-        print(items)
-        goods = []
+        goods_2 = []
         for item in items:
-            try:
-                goods.append({'title': item.get_text()})
-            except Exception as e:
-                print(e)
-        print(goods)
-        return goods
+            goods = {'title': item.find('span', class_="result__name").get_text(),
+                     'price': self.convert_to_float(item),
+                     'image': item.find('span', class_="result__img").get_text(),
+                     'owner': self.request.user
+                     }
+            ParseData.objects.create(**goods)
+            goods['owner'] = self.request.user.id
+            goods_2.append(goods)
+        return goods_2
 
     def get_html(self, link, params=None):
         r = requests.get(link, params=params)
         return r
+
+    def convert_to_float(self, item):
+        p = item.find('span', class_="g-item-data").get_text()
+        p_1 = p.replace(',', '.')
+        price = float(p_1.replace(' ', ''))
+        return price
