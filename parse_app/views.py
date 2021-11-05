@@ -27,7 +27,7 @@ class GetLinkView(APIView):
             goods = {'title': item.find('span', class_="result__name").get_text(),
                      'price': self.convert_to_float(item),
                      'image': item.find('span', class_="result__img").get_text(),
-                     'category': self.valid_string(item),
+                     'category': self.valid_string(soup)
                      }
             ParseData.objects.create(**goods)
             goods_2.append(goods)
@@ -43,8 +43,8 @@ class GetLinkView(APIView):
         price = float(p_1.replace(' ', ''))
         return price
 
-    def valid_string(self, item):
-        cat = item.find('h1', class_="content__header").get_text()
+    def valid_string(self, soup):
+        cat = soup.find('h1', class_="content__header").get_text()
         cat_1 = cat.replace('(', '')
         cat_2 = cat_1.replace(')', '')
         cat_3 = cat_2.replace("'", "")
