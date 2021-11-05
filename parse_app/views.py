@@ -1,5 +1,4 @@
 from django.shortcuts import redirect
-from django.contrib.auth import authenticate, login, logout, get_user_model
 
 from bs4 import BeautifulSoup
 import requests
@@ -8,23 +7,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .models import ParseData
-
-
-class LoginView(APIView):
-
-    def post(self, request):
-        user = authenticate(username=request.data['username'], password=request.data['password'])
-        if user:
-            login(request, user)
-        if not request.user.is_authenticated:
-            create = get_user_model().objects.create_user(**request.data)
-            login(request, create)
-        return redirect('get_link')
-
-
-def do_logout(request):
-    logout(request)
-    return redirect('login')
 
 
 class GetLinkView(APIView):
@@ -39,12 +21,14 @@ class GetLinkView(APIView):
 
     def get_content(self, html):
         soup = BeautifulSoup(html, 'html.parser')
+        cat = soup.find('h1', class_="content__header").get_text(),
         items = soup.find_all('li', class_='result__item')
         goods_2 = []
         for item in items:
             goods = {'title': item.find('span', class_="result__name").get_text(),
                      'price': self.convert_to_float(item),
                      'image': item.find('span', class_="result__img").get_text(),
+                     'category': cat,
                      'owner': self.request.user
                      }
             ParseData.objects.create(**goods)
@@ -61,3 +45,4 @@ class GetLinkView(APIView):
         p_1 = p.replace(',', '.')
         price = float(p_1.replace(' ', ''))
         return price
+
