@@ -21,18 +21,15 @@ class GetLinkView(APIView):
 
     def get_content(self, html):
         soup = BeautifulSoup(html, 'html.parser')
-        cat = soup.find('h1', class_="content__header").get_text(),
         items = soup.find_all('li', class_='result__item')
         goods_2 = []
         for item in items:
             goods = {'title': item.find('span', class_="result__name").get_text(),
                      'price': self.convert_to_float(item),
                      'image': item.find('span', class_="result__img").get_text(),
-                     'category': cat,
-                     'owner': self.request.user
+                     'category': self.valid_string(item),
                      }
             ParseData.objects.create(**goods)
-            goods['owner'] = self.request.user.id
             goods_2.append(goods)
         return goods_2
 
@@ -45,4 +42,12 @@ class GetLinkView(APIView):
         p_1 = p.replace(',', '.')
         price = float(p_1.replace(' ', ''))
         return price
+
+    def valid_string(self, item):
+        cat = item.find('h1', class_="content__header").get_text()
+        cat_1 = cat.replace('(', '')
+        cat_2 = cat_1.replace(')', '')
+        cat_3 = cat_2.replace("'", "")
+        category = cat_3.replace(",", '')
+        return category
 
