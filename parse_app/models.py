@@ -6,3 +6,6 @@ class ParseData(models.Model):
     price = models.FloatField()
     image = models.ImageField()
     category = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.title
