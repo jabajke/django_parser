@@ -6,6 +6,8 @@ from rest_framework.response import Response
 
 from .models import ParseData
 
+from django.core.files.images import ImageFile
+
 
 class GetLinkView(APIView):
     headers = {
@@ -14,21 +16,26 @@ class GetLinkView(APIView):
 
     def post(self, request):
         link = request.data['link']
-        html = self.get_html(link)
-        return Response({'data': self.get_content(html.content)})
+        if '21vek.by' in link:
+            html = self.get_html(link)
+            return Response({'data': self.get_content(html.content)})
+        raise Exception('Not 21vek')
 
     def get_content(self, html):
         soup = BeautifulSoup(html, 'html.parser')
         items = soup.find_all('li', class_='result__item')
         goods_2 = []
         for item in items:
-            goods = {'title': item.find('span', class_="result__name").get_text(),
-                     'price': self.convert_to_float(item),
-                     'image': item.find('span', class_="result__img").get_text(),
-                     'category': self.valid_string(soup)
-                     }
-            ParseData.objects.create(**goods)
-            goods_2.append(goods)
+            with open(f"{item.find('span', class_='result__img').find('img')['alt']}.jpeg", "wb") as f:
+                # f.write(requests.get(f"{item.find('span', class_='result__img').find('img')['src']}").content)
+                goods = {'title': item.find('span', class_="result__name").get_text(),
+                         'price': self.convert_to_float(item),
+                         'image': ImageFile(
+                             open(f"{item.find('span', class_='result__img').find('img')['alt']}.jpeg", 'rb')),
+                         'category': self.valid_string(soup)
+                         }
+                ParseData.objects.create(**goods)
+                goods_2.append(goods)
         return goods_2
 
     def get_html(self, link, params=None):
@@ -48,4 +55,3 @@ class GetLinkView(APIView):
         cat_3 = cat_2.replace("'", "")
         category = cat_3.replace(",", '')
         return category
-
