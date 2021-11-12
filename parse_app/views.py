@@ -6,8 +6,6 @@ from rest_framework.response import Response
 
 from .models import ParseData
 
-from django.core.files.images import ImageFile
-
 
 class GetLinkView(APIView):
     headers = {
@@ -26,16 +24,14 @@ class GetLinkView(APIView):
         items = soup.find_all('li', class_='result__item')
         goods_2 = []
         for item in items:
-            with open(f"{item.find('span', class_='result__img').find('img')['alt']}.jpeg", "wb") as f:
-                # f.write(requests.get(f"{item.find('span', class_='result__img').find('img')['src']}").content)
-                goods = {'title': item.find('span', class_="result__name").get_text(),
-                         'price': self.convert_to_float(item),
-                         'image': ImageFile(
-                             open(f"{item.find('span', class_='result__img').find('img')['alt']}.jpeg", 'rb')),
-                         'category': self.valid_string(soup)
-                         }
-                ParseData.objects.create(**goods)
-                goods_2.append(goods)
+
+            goods = {'title': item.find('span', class_="result__name").get_text(),
+                     'price': self.convert_to_float(item),
+                     'image': f"{item.find('span', class_='result__img').find('img')['src']}",
+                     'category': self.valid_string(soup)
+                     }
+            ParseData.objects.create(**goods)
+            goods_2.append(goods)
         return goods_2
 
     def get_html(self, link, params=None):

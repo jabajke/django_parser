@@ -21,8 +21,10 @@
 									<li class="hassubs">
 										<a href="{% url 'categories' %}">Categories</a>
 										<ul>
-											<li><a href="{% url 'categories' %}">Category</a></li>
-											<li><a href="{% url 'categories' %}">Category</a></li>
+                                            {% for i in data %}
+											    <li><a href="{% url 'categories' %}">{{ i }}</a></li>
+                                            {% endfor %}
+											<li><a href="{% url 'categories' %}">asda</a></li>
 											<li><a href="{% url 'categories' %}">Category</a></li>
 											<li><a href="{% url 'categories' %}">Category</a></li>
 											<li><a href="{% url 'categories' %}">Category</a></li>

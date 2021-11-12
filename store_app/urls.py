@@ -4,7 +4,7 @@ from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path('', ShowItemView.as_view(), name='show_item'),
-    path('index/', TemplateView.as_view(template_name='store_app/index.html'), name='index'),
+    path('index/', IndexView.as_view(), name='index'),
     path('categories/', TemplateView.as_view(template_name='store_app/categories.html'), name='categories'),
     path('product/', TemplateView.as_view(template_name='store_app/product.html'), name='product'),
     path('checkout/', TemplateView.as_view(template_name='store_app/checkout.html'), name='checkout'),
