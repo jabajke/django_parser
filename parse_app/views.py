@@ -24,7 +24,6 @@ class GetLinkView(APIView):
         items = soup.find_all('li', class_='result__item')
         goods_2 = []
         for item in items:
-
             goods = {'title': item.find('span', class_="result__name").get_text(),
                      'price': self.convert_to_float(item),
                      'image': f"{item.find('span', class_='result__img').find('img')['src']}",
