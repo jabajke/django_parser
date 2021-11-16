@@ -22,7 +22,7 @@
 										<a href="{% url 'categories' %}">Categories</a>
 										<ul>
                                             {% for i in data %}
-											    <li><a href="{% url 'categories' %}">{{ i }}</a></li>
+											    <li><a href="{% url 'category_item' i %}">{{ i }}</a></li>
                                             {% endfor %}
 
 										</ul>
