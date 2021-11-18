@@ -22,7 +22,7 @@ class IndexView(TemplateView):
     list_category = []
     for i in category:
         list_category.append(i['category'])
-        extra_context = {'data': list_category}
+        extra_context = {'list_category': list_category}
 
 
 class CategoryView(IndexView):
@@ -43,3 +43,12 @@ class CartView(IndexView):
 
 class CheckoutView(IndexView):
     template_name = 'store_app/checkout.html'
+
+
+class CategoryItemView(CategoryView):
+
+    def get(self, request, i):
+        self.extra_context['data'] = ParseData.objects.filter(category=i)
+        self.extra_context['list_category_2'] = i
+        return super().get(self, request, i)
+
