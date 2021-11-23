@@ -7,6 +7,8 @@ from parse_app.models import ParseData
 from django.core.serializers import serialize
 from django.shortcuts import render
 
+from .models import CartModel, CartItem
+
 
 class ShowItemView(APIView):
 
@@ -51,4 +53,16 @@ class CategoryItemView(CategoryView):
         self.extra_context['data'] = ParseData.objects.filter(category=i)
         self.extra_context['list_category_2'] = i
         return super().get(self, request, i)
+
+
+class Cart:
+    def add_to_cart(self, request, pk):
+        goods = ParseData.objects.get(pk=pk)
+        new_goods = CartModel.objects.get_or_create(goods=goods)
+        cart = CartItem.objects.first()
+        CartItem.items.create(new_goods)
+
+
+
+
 
