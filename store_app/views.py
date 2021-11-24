@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from parse_app.models import ParseData
 
 from django.core.serializers import serialize
-from django.shortcuts import render
 
 from .models import CartModel, CartItem
 
