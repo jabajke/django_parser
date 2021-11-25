@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Categories</title>
+    <title>{{ list_category_2 }}</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Sublime project">
@@ -64,7 +64,7 @@
                             <img src="{{ x.image }}" alt="image of {{ x }}" class="grid-container__item-img">
                             <h3 class="grid-container__item-heading">{{ x }}</h3>
                             <span class="grid-container__item-price">{{ x.price }}</span>
-                            <button class="grid-container__item-btn"><img src="{% static 'store_app/images/shopping.svg' %}" alt=""></button>
+                            <a class="grid-container__item-btn" href="{% url 'add_cart' x.id %}"><img src="{% static 'store_app/images/shopping.svg' %}" alt=""></a>
                         </div>
                         {% endfor %}</div>
 					<!-- Product Sorting -->
@@ -75,8 +75,6 @@
 				<div class="col">
 					
 					<div class="product_grid">
-
-
 
 					</div>
 						

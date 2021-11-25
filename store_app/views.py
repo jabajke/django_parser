@@ -1,3 +1,5 @@
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,7 +8,7 @@ from parse_app.models import ParseData
 
 from django.core.serializers import serialize
 
-from .models import CartModel, CartItem
+from store_app.cart import Cart
 
 
 class ShowItemView(APIView):
@@ -41,6 +43,26 @@ class ContactView(IndexView):
 class CartView(IndexView):
     template_name = 'store_app/cart.html'
 
+    def get(self, request):
+        self.cart = Cart(request)
+        self.z = []
+        obj = ParseData.objects
+        for k in self.cart.cart:
+            self.z.append({'id': k,
+                           'image': obj.get(pk=k).image,
+                           'qnty': self.cart.cart[k]['quantity'],
+                           'price': self.cart.cart[k]['price'],
+                           'total': self.cart.cart[k]['quantity'] * self.cart.cart[k]['price'],
+                           'title': obj.get(pk=k).title
+                           })
+        self.extra_context = {'z': self.z}
+        return super().get(self, request)
+
+
+def add_to_cart(request, pk):
+    Cart(request).add(ParseData.objects.get(pk=pk))
+    return redirect(reverse_lazy('categories'))
+
 
 class CheckoutView(IndexView):
     template_name = 'store_app/checkout.html'
@@ -54,14 +76,6 @@ class CategoryItemView(CategoryView):
         return super().get(self, request, i)
 
 
-class Cart:
-    def add_to_cart(self, request, pk):
-        goods = ParseData.objects.get(pk=pk)
-        new_goods = CartModel.objects.get_or_create(goods=goods)
-        cart = CartItem.objects.first()
-        CartItem.items.create(new_goods)
-
-
-
-
-
+'''
+Отображение категорий в корзине | Сделать кликел
+'''
