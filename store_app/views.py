@@ -46,16 +46,16 @@ class CartView(IndexView):
     def get(self, request):
         self.cart = Cart(request)
         self.z = []
-        obj = ParseData.objects
+        self.obj = ParseData.objects
         for k in self.cart.cart:
             self.z.append({'id': k,
-                           'image': obj.get(pk=k).image,
+                           'image': self.obj.get(pk=k).image,
                            'qnty': self.cart.cart[k]['quantity'],
                            'price': self.cart.cart[k]['price'],
                            'total': self.cart.cart[k]['quantity'] * self.cart.cart[k]['price'],
-                           'title': obj.get(pk=k).title
+                           'title': self.obj.get(pk=k).title
                            })
-        self.extra_context = {'z': self.z}
+        self.extra_context['z'] = self.z
         return super().get(self, request)
 
 
@@ -76,6 +76,17 @@ class CategoryItemView(CategoryView):
         return super().get(self, request, i)
 
 
-'''
-Отображение категорий в корзине | Сделать кликел
-'''
+class OnClickView(APIView):
+
+    def post(self, request, pk):
+        cart = Cart(request)
+        print(cart.cart)
+        if request.data['up']:
+            cart.cart[pk]['quantity'] += 1
+        if not request.data['up']:
+            cart.cart[pk]['quantity'] -= 1
+        cart.save()
+        return Response([cart.cart[pk]['quantity'], cart.cart[pk]['quantity'] * cart.cart[pk]['price']])
+
+
+

@@ -88,12 +88,13 @@
                                     <div class="product_quantity clearfix">
                                         <input id="quantity_input" type="text" pattern="[0-9]*" value="{{ i.qnty }}">
                                         <div class="quantity_buttons">
-                                            <a href="" id="quantity_inc_button"
-                                                 class="quantity_inc quantity_control"><i
-                                                    class="fa fa-chevron-up" aria-hidden="true"></i></a>
-                                            <a onclick="" id="quantity_dec_button" class="quantity_dec quantity_control"><i
+                                            <button onclick="upDown({{ i }}, true)" id="quantity_inc_button"
+                                               class="quantity_inc quantity_control"><i
+                                                    class="fa fa-chevron-up" aria-hidden="true"></i></button>
+                                            <button onclick="upDown({{ i }}, false)" id="quantity_dec_button"
+                                               class="quantity_dec quantity_control"><i
 
-                                                    class="fa fa-chevron-down" aria-hidden="true"></i></a>
+                                                    class="fa fa-chevron-down" aria-hidden="true"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -186,18 +187,22 @@
 </div>
 {% include 'store_app/components/footer.html' %}
 {% include 'store_app/components/scripts.html' %}
-{#<script>#}
-{#    function changeAmount(isIncrement) {#}
-{#        const quantityInput = document.getElementById('quantity_input');#}
-{#        if (isIncrement) {#}
-{#            quantityInput.setAttribute('value', +quantityInput.value + 1)#}
-{##}
-{#        } else if (quantityInput.value !== '1') {#}
-{#            quantityInput.setAttribute('value', +quantityInput.value + -1)#}
-{##}
-{#        }#}
-{#    }#}
-{##}
-{#</script>#}
+<script>
+    function upDown(i, isIncrement) {
+        fetch(`up_down/${i.id}`, {method:'POST', body:JSON.stringify({"up": isIncrement}),
+            headers:{'Content-Type':'application/json'}}).then((res) => res.json()).then((data) => {
+                const quantityInput = document.querySelector('#quantity_input')
+                const quantityDecButton = document.querySelector('#quantity_dec_button')
+                document.querySelector('.cart_item_total').innerHTML=data[1];
+                quantityInput.value=data[0];
+                if (data[0]==1){
+                    quantityDecButton.disabled=true
+                }
+
+            })
+
+    }
+</script>
 </body>
 </html>
+
