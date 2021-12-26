@@ -64,6 +64,7 @@ class CartView(IndexView):
 
 def add_to_cart(request, pk):
     Cart(request).add(ParseData.objects.get(pk=pk))
+
     return redirect(reverse_lazy('categories'))
 
 
