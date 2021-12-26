@@ -43,10 +43,13 @@ class ContactView(IndexView):
 class CartView(IndexView):
     template_name = 'store_app/cart.html'
 
-    def get(self, request):
-        self.cart = Cart(request)
-        self.z = []
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.obj = ParseData.objects
+        self.z = []
+
+    def get(self, request, **kwargs):
+        self.cart = Cart(request)
         for k in self.cart.cart:
             self.z.append({'id': k,
                            'image': self.obj.get(pk=k).image,
@@ -70,7 +73,7 @@ class CheckoutView(IndexView):
 
 class CategoryItemView(CategoryView):
 
-    def get(self, request, i):
+    def get(self, request, i, **kwargs):
         self.extra_context['data'] = ParseData.objects.filter(category=i)
         self.extra_context['list_category_2'] = i
         return super().get(self, request, i)
@@ -80,13 +83,10 @@ class OnClickView(APIView):
 
     def post(self, request, pk):
         cart = Cart(request)
-        print(cart.cart)
         if request.data['up']:
             cart.cart[pk]['quantity'] += 1
-        if not request.data['up']:
-            cart.cart[pk]['quantity'] -= 1
+        if cart.cart[pk]['quantity'] > 1:
+            if not request.data['up']:
+                cart.cart[pk]['quantity'] -= 1
         cart.save()
         return Response([cart.cart[pk]['quantity'], cart.cart[pk]['quantity'] * cart.cart[pk]['price']])
-
-
-
