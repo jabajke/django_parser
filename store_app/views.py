@@ -98,7 +98,8 @@ class OnClickView(APIView):
         return Response([cart.cart[pk]['quantity'], cart.cart[pk]['quantity'] * cart.cart[pk]['price']])
 
 
-class GetCountView(APIView):
+class GetCountView(IndexView):
 
     def get(self, request):
-        return Response(len(request.session.get('cart')))
+        self.extra_context['count'] = len(request.session.get('cart'))
+        return super().get(self, request)
