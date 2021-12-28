@@ -59,13 +59,18 @@ class CartView(IndexView):
                            'title': self.obj.get(pk=k).title
                            })
         self.extra_context['z'] = self.z
+
         return super().get(self, request)
 
 
 def add_to_cart(request, pk):
     Cart(request).add(ParseData.objects.get(pk=pk))
-
     return redirect(reverse_lazy('categories'))
+
+
+def clear_cart(request):
+    Cart(request).clear()
+    return redirect(reverse_lazy('index'))
 
 
 class CheckoutView(IndexView):
@@ -91,3 +96,9 @@ class OnClickView(APIView):
                 cart.cart[pk]['quantity'] -= 1
         cart.save()
         return Response([cart.cart[pk]['quantity'], cart.cart[pk]['quantity'] * cart.cart[pk]['price']])
+
+
+class GetCountView(APIView):
+
+    def get(self, request):
+        return Response(len(request.session.get('cart')))

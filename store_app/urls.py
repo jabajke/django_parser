@@ -11,6 +11,8 @@ urlpatterns = [
     path('contact/', ContactView.as_view(), name='contact'),
     path('cart/', CartView.as_view(), name='cart'),
     path('add_cart/<int:pk>', add_to_cart, name='add_cart'),
-    path('cart/up_down/<str:pk>', OnClickView.as_view(), name='onclick')
+    path('cart/up_down/<str:pk>', OnClickView.as_view(), name='onclick'),
+    path('cart/clear_cart', clear_cart, name='clear'),
+    path('get_count/', GetCountView.as_view(), name='get_count')
 
 ]

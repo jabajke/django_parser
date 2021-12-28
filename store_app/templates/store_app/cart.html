@@ -111,7 +111,7 @@
                         <div class="button continue_shopping_button"><a href="{% url 'categories' %}">Continue
                             shopping</a></div>
                         <div class="cart_buttons_right ml-lg-auto">
-                            <div class="button clear_cart_button"><a href="#">Clear cart</a></div>
+                            <div class="button clear_cart_button"><a href="{% url 'clear' %}">Clear cart</a></div>
                             <div class="button update_cart_button"><a href="#">Update cart</a></div>
                         </div>
                     </div>
@@ -197,6 +197,17 @@
             })
 
     }
+
+    function getData() {
+        fetch('/store/get_count/')
+            .then(res => res.json())
+            .then(data => {
+                const cardNumber = document.querySelector('#card-number > span')
+                cardNumber.textContent = `(${data})`
+                console.log(cardNumber)
+            })
+    }
+    getData()
 </script>
 </body>
 </html>
