@@ -21,11 +21,15 @@ class ShowItemView(APIView):
 
 class IndexView(TemplateView):
     template_name = 'store_app/index.html'
-    category = ParseData.objects.distinct().values('category')
-    list_category = []
-    for i in category:
-        list_category.append(i['category'])
-        extra_context = {'list_category': list_category}
+    extra_context = {}
+
+    def get(self, request, *args, **kwargs):
+        category = ParseData.objects.distinct().values('category')
+        list_category = []
+        for i in category:
+            list_category.append(i['category'])
+            self.extra_context['list_category'] = list_category
+        return super().get(self, request, *args, **kwargs)
 
 
 class CategoryView(IndexView):
@@ -42,13 +46,10 @@ class ContactView(IndexView):
 
 class CartView(IndexView):
     template_name = 'store_app/cart.html'
+    obj = ParseData.objects
+    z = []
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.obj = ParseData.objects
-        self.z = []
-
-    def get(self, request, **kwargs):
+    def get(self, request):
         self.cart = Cart(request)
         for k in self.cart.cart:
             self.z.append({'id': k,
@@ -59,7 +60,6 @@ class CartView(IndexView):
                            'title': self.obj.get(pk=k).title
                            })
         self.extra_context['z'] = self.z
-
         return super().get(self, request)
 
 
